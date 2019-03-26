@@ -41,7 +41,25 @@ public class FileReader {
         return Arrays.copyOfRange(fileContents, offset, offset + size);
     }
 
+    private ByteBuffer wrap(byte[] in) {
+        ByteBuffer bb = ByteBuffer.wrap(in);
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        return bb;
+    }
+
     public String readString(int offset, int size) {
         return new String(readBytes(offset, size));
+    }
+
+    public String readString(int offset) {
+        byte[] copy = Arrays.copyOfRange(fileContents, offset, fileContents.length - 1);
+        for(int i = 0; i < copy.length; i++) {
+          if(copy[i] == 0) return new String(Arrays.copyOfRange(fileContents, offset, offset + i));
+        }
+        return null;
+    }
+
+    public int readInt(int offset) {
+        return wrap(readBytes(offset, 4)).getInt();
     }
 }
