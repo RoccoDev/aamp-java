@@ -62,4 +62,8 @@ public class FileReader {
     public int readInt(int offset) {
         return wrap(readBytes(offset, 4)).getInt();
     }
+
+    public float readFloat(int offset) {
+        return wrap(readBytes(offset, 4)).getFloat();
+    }
 }
