@@ -3,6 +3,9 @@ package dev.rocco.libaamp.aamp;
 import dev.rocco.libaamp.aamp.type.*;
 import dev.rocco.libaamp.io.FileReader;
 
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 public class AampParameter {
 
     int crc32Hash;
@@ -28,8 +31,6 @@ public class AampParameter {
         int dataOffset = offset + 4 * (offsetField & 0xffffff);
         int paramType = reader.readByte(offset + 0x7);
         type = ParameterTypes.values()[paramType];
-
-        System.out.println(type);
 
         switch(type) {
             case BOOL:
@@ -70,6 +71,65 @@ public class AampParameter {
             case COLOR:
                 value = new Color(reader.readFloat(dataOffset), reader.readFloat(dataOffset + 4),
                         reader.readFloat(dataOffset + 8), reader.readFloat(dataOffset + 12));
+                break;
+
+            case QUAT:
+                float[] values = new float[4];
+                for(int i = 0; i < 4; i++) {
+                    values[i] = reader.readFloat(dataOffset + 4 * i);
+                }
+                value = new Quat(values);
+                break;
+
+            case U32_BUFFER:
+            case INT_BUFFER:
+                int size = reader.readInt(dataOffset - 4);
+                int[] result = new int[size];
+                for(int i = 0; i < size; i++) {
+                    result[i] = reader.readInt(dataOffset + 4 * i);
+                }
+                value = result;
+                break;
+
+            case F32_BUFFER:
+                int sz = reader.readInt(dataOffset - 4);
+                float[] rs = new float[sz];
+                for(int i = 0; i < sz; i++) {
+                    rs[i] = reader.readFloat(dataOffset + 4 * i);
+                }
+                value = rs;
+                break;
+
+            case BINARY_BUFFER:
+                int bufferSize = reader.readInt(dataOffset - 4);
+                value = reader.readBytes(dataOffset, bufferSize);
+                break;
+
+            case CURVE1:
+            case CURVE2:
+            case CURVE3:
+            case CURVE4:
+                int numCurves = type.ordinal() - ParameterTypes.CURVE1.ordinal() + 1;
+                int[] ints = new int[2 * numCurves];
+                float[] floats = new float[30 * numCurves];
+
+                for(int i = 0; i < numCurves; i++) {
+                    for(int ii = 0; i < 2; i++) {
+                        ints[i + ii] = reader.readInt(dataOffset + 0x80 * i + 4 * ii);
+                    }
+
+                    for(int f = 0; f < 30; f++) {
+                        floats[i + f] = reader.readFloat(dataOffset + 0x80 * i + 8 + 4 * f);
+                    }
+                }
+                value = new Curve(ints, floats);
+
+                break;
+
+            case SPECIAL:
+            default:
+                System.err.println("Unable to parse type " + type);
+                break;
         }
     }
 
