@@ -14,7 +14,7 @@ public class Crc32 {
     private static void loadHash(String s) {
         CRC32 crc = new CRC32();
         crc.update(s.getBytes());
-        knownHashes.put((int)crc.getValue(), s);
+        knownHashes.put((int) crc.getValue(), s);
     }
 
     public static void loadAllHashes(File file) throws IOException {

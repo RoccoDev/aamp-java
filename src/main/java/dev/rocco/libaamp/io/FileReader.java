@@ -1,8 +1,6 @@
 package dev.rocco.libaamp.io;
 
-import dev.rocco.libaamp.aamp.AampFile;
 import dev.rocco.libaamp.aamp.AampHeader;
-import dev.rocco.libaamp.aamp.ParameterIO;
 
 import java.io.File;
 import java.io.IOException;
@@ -98,5 +96,26 @@ public class FileReader {
 
     public byte readByte(int offset) {
         return wrap(readBytes(offset, 1)).get();
+    }
+
+    public void setBytes(int offset, byte[] content) {
+        System.arraycopy(content, 0, fileContents, offset, content.length);
+    }
+
+    public void writeToFile(File f) {
+        if(!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try(FileChannel channel = (FileChannel)
+                Files.newByteChannel(Paths.get(f.toURI()), StandardOpenOption.WRITE)) {
+            channel.write(wrap(fileContents));
+        }
+        catch(IOException ex) {
+            ex.printStackTrace();
+        }
     }
 }
