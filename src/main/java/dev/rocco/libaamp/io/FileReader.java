@@ -98,24 +98,4 @@ public class FileReader {
         return wrap(readBytes(offset, 1)).get();
     }
 
-    public void setBytes(int offset, byte[] content) {
-        System.arraycopy(content, 0, fileContents, offset, content.length);
-    }
-
-    public void writeToFile(File f) {
-        if(!f.exists()) {
-            try {
-                f.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        try(FileChannel channel = (FileChannel)
-                Files.newByteChannel(Paths.get(f.toURI()), StandardOpenOption.WRITE)) {
-            channel.write(wrap(fileContents));
-        }
-        catch(IOException ex) {
-            ex.printStackTrace();
-        }
-    }
 }
