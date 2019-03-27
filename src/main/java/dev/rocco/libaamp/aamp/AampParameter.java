@@ -40,6 +40,19 @@ public class AampParameter {
                 value = reader.readFloat(dataOffset);
                 break;
 
+            case STRING32:
+                value = parseString(reader, dataOffset, 32);
+                break;
+            case STRING64:
+                value = parseString(reader, dataOffset, 64);
+                break;
+            case STRING256:
+                value = parseString(reader, dataOffset, 256);
+                break;
+            case STRING_REF:
+                value = parseString(reader, dataOffset, -1);
+                break;
+
             case VEC2:
                 value = new Vec2(reader.readFloat(dataOffset), reader.readFloat(dataOffset + 4));
                 break;
@@ -54,6 +67,15 @@ public class AampParameter {
                 value = new Color(reader.readFloat(dataOffset), reader.readFloat(dataOffset + 4),
                         reader.readFloat(dataOffset + 8), reader.readFloat(dataOffset + 12));
         }
+    }
+
+    public AampString parseString(FileReader reader, int offset, int maxSize) {
+        int dataSize = reader.getStringOffset(offset) - offset;
+        int stringLength = maxSize == -1 ? dataSize : Math.min(dataSize, maxSize);
+
+        byte[] raw = reader.readBytes(offset, stringLength);
+
+        return new AampString(new String(raw), dataSize);
     }
 
     public ParameterTypes getType() {

@@ -1,5 +1,9 @@
 package dev.rocco.libaamp.io;
 
+import dev.rocco.libaamp.aamp.AampFile;
+import dev.rocco.libaamp.aamp.AampHeader;
+import dev.rocco.libaamp.aamp.ParameterIO;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -15,8 +19,18 @@ public class FileReader {
     private File inputFile;
     private byte[] fileContents;
 
+    private AampHeader header;
+
     public FileReader(File inputFile) {
         this.inputFile = inputFile;
+    }
+
+    public void setHeader(AampHeader header) {
+        this.header = header;
+    }
+
+    public AampHeader getHeader() {
+        return header;
     }
 
     public void parse() {
@@ -59,11 +73,15 @@ public class FileReader {
     }
 
     public String readString(int offset) {
-        byte[] copy = Arrays.copyOfRange(fileContents, offset, fileContents.length - 1);
+        return new String(Arrays.copyOfRange(fileContents, offset, getStringOffset(offset)));
+    }
+
+    public int getStringOffset(int offsetStart) {
+        byte[] copy = Arrays.copyOfRange(fileContents, offsetStart, fileContents.length - 1);
         for(int i = 0; i < copy.length; i++) {
-          if(copy[i] == 0) return new String(Arrays.copyOfRange(fileContents, offset, offset + i));
+            if(copy[i] == 0) return offsetStart + i;
         }
-        return null;
+        return 0;
     }
 
     public int readInt(int offset) {
