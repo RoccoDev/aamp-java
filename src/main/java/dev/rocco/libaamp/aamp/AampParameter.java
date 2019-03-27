@@ -16,6 +16,10 @@ public class AampParameter {
         this.offset = offset;
     }
 
+    public int getCrc32Hash() {
+        return crc32Hash;
+    }
+
     public void parse(FileReader reader) {
         crc32Hash = reader.readInt(offset);
 
