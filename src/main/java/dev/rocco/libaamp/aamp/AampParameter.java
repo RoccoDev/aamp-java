@@ -2,9 +2,7 @@ package dev.rocco.libaamp.aamp;
 
 import dev.rocco.libaamp.aamp.type.*;
 import dev.rocco.libaamp.io.FileReader;
-
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import dev.rocco.libaamp.io.FileWriter;
 
 public class AampParameter {
 
@@ -140,6 +138,14 @@ public class AampParameter {
         byte[] raw = reader.readBytes(offset, stringLength);
 
         return new AampString(new String(raw), dataSize);
+    }
+
+    public void write(FileWriter writer) {
+        int offset = writer.getCurrentOffset();
+        writer.writeInt(offset, crc32Hash);
+
+        writer.writeByte(offset + 0x7, (byte) type.ordinal());
+
     }
 
     public ParameterTypes getType() {

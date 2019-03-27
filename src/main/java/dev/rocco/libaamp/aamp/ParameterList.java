@@ -1,6 +1,7 @@
 package dev.rocco.libaamp.aamp;
 
 import dev.rocco.libaamp.io.FileReader;
+import dev.rocco.libaamp.io.FileWriter;
 
 import java.util.HashMap;
 
@@ -43,6 +44,14 @@ public class ParameterList {
 
             currentListOffset += 12;
         }
+    }
+
+    public void write(FileWriter writer) {
+        int offset = writer.getCurrentOffset();
+        writer.writeInt(offset, crc32Hash);
+
+        writer.writeInt(offset + 0x6, childLists.size());
+        writer.writeInt(offset + 0xa, childObjects.size());
     }
 
     public HashMap<Integer, ParameterList> getChildLists() {

@@ -15,4 +15,8 @@ public class OffsetByteArrayOutputStream extends ByteArrayOutputStream {
         this.count = this.buf.length;
     }
 
+    public int getOffset() {
+        return count;
+    }
+
 }

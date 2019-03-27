@@ -29,28 +29,32 @@ public class FileWriter {
         fileContents.write(bb.array(), offset);
     }
 
-    private void writeBytes(int offset, ByteBuffer buffer) {
+    public int getCurrentOffset() {
+        return fileContents.getOffset();
+    }
+
+    public void writeBytes(int offset, ByteBuffer buffer) {
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         fileContents.write(buffer.array(), offset);
     }
 
-    private void writeString(int offset, String s) {
+    public void writeString(int offset, String s) {
         writeBytes(offset, s.getBytes());
     }
 
-    private void writeInt(int offset, int write) {
+    public void writeInt(int offset, int write) {
         writeBytes(offset, ByteBuffer.allocate(4).putInt(write));
     }
 
-    private void writeFloat(int offset, float write) {
+    public void writeFloat(int offset, float write) {
         writeBytes(offset, ByteBuffer.allocate(4).putFloat(write));
     }
 
-    private void writeShort(int offset, short write) {
+    public void writeShort(int offset, short write) {
         writeBytes(offset, ByteBuffer.allocate(2).putShort(write));
     }
 
-    private void writeByte(int offset, byte write) {
+    public void writeByte(int offset, byte write) {
         /* Skip endianness check, since we're only writing one byte. */
         fileContents.write(new byte[] {write}, offset, 1);
     }
@@ -63,6 +67,8 @@ public class FileWriter {
         writeInt(8, header.getFlags());
 
         writeInt(0x10, file.getParameterIO().getVersion());
+
+        writeInt(0x2c, 0); // Unknown, see https://zeldamods.org/wiki/AAMP#Header
 
         writeString(0x30, file.getParameterIO().getType());
 
