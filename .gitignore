@@ -1,5 +1,4 @@
-settings.gradle
 /.idea/
-/gradle/
+/.gradle/
 /out/
 Tester.java
