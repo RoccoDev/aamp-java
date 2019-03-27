@@ -38,7 +38,14 @@ public class FileReader {
     }
 
     public byte[] readBytes(int offset, int size) {
-        return Arrays.copyOfRange(fileContents, offset, offset + size);
+        try {
+            return Arrays.copyOfRange(fileContents, offset, offset + size);
+        } catch(Exception ex) {
+            System.out.println("Offset: " + offset + " / Size: " + size);
+            ex.printStackTrace();
+
+            return new byte[0];
+        }
     }
 
     private ByteBuffer wrap(byte[] in) {
@@ -65,5 +72,13 @@ public class FileReader {
 
     public float readFloat(int offset) {
         return wrap(readBytes(offset, 4)).getFloat();
+    }
+
+    public short readShort(int offset) {
+        return wrap(readBytes(offset, 2)).getShort();
+    }
+
+    public byte readByte(int offset) {
+        return wrap(readBytes(offset, 1)).get();
     }
 }

@@ -37,7 +37,11 @@ public class AampHeader {
         dataSize = reader.readInt(0x24);
         stringSize = reader.readInt(0x28);
 
-        return new ParameterIO(pioType, pioVersion);
+        int formatLength = reader.readInt(0x14);
+        ParameterList rootList = new ParameterList(0x30 + formatLength);
+        rootList.parse(reader);
+
+        return new ParameterIO(pioType, pioVersion, rootList);
     }
 
     public byte[] getMagic() {
